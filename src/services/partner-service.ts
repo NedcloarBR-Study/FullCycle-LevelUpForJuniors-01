@@ -13,10 +13,16 @@ export class PartnerService {
     const connection = await Database.getInstance().getConnection();
     try {
       await connection.beginTransaction();
+
       const user = await UserModel.create(
-        { name, email, password },
+        {
+          name,
+          email,
+          password,
+        },
         { connection }
       );
+
       const partner = await PartnerModel.create(
         {
           company_name,
@@ -24,6 +30,7 @@ export class PartnerService {
         },
         { connection }
       );
+
       await connection.commit();
       return {
         id: partner.id,
@@ -32,13 +39,15 @@ export class PartnerService {
         company_name,
         created_at: partner.created_at,
       };
-    } catch (error) {
+    } catch (e) {
       await connection.rollback();
-      throw error;
+      throw e;
+    } finally {
+      await connection.release();
     }
   }
 
-  public async findByUserId(user_id: number) {
-    return await PartnerModel.findByUserId(user_id);
+  public async findByUserId(userId: number) {
+    return PartnerModel.findByUserId(userId);
   }
 }

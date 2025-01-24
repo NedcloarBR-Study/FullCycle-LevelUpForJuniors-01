@@ -6,11 +6,12 @@ import {
   CustomerRoutes,
   EventRoutes,
   PartnerRoutes,
+  PurchaseRoutes,
   TicketRoutes,
 } from "./controller";
 import { UserService } from "./services/user-service";
 
-const app = express();
+export const app = express();
 
 app.use(express.json());
 
@@ -63,10 +64,15 @@ app.use("/partners", PartnerRoutes);
 app.use("/customers", CustomerRoutes);
 app.use("/events", EventRoutes);
 app.use("/events", TicketRoutes);
+app.use("/purchases", PurchaseRoutes);
 
 app.listen(3000, async () => {
   const connection = Database.getInstance();
   await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
+  await connection.execute("TRUNCATE TABLE reservation_tickets");
+  await connection.execute("TRUNCATE TABLE purchase_tickets");
+  await connection.execute("TRUNCATE TABLE purchases");
+  await connection.execute("TRUNCATE TABLE tickets");
   await connection.execute("TRUNCATE TABLE events");
   await connection.execute("TRUNCATE TABLE customers");
   await connection.execute("TRUNCATE TABLE partners");

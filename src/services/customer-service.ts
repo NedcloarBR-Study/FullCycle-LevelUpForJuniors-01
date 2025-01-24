@@ -24,9 +24,9 @@ export class CustomerService {
       );
       const customer = await CustomerModel.create(
         {
+          user_id: user.id,
           address,
           phone,
-          user_id: user.id,
         },
         { connection }
       );
@@ -42,6 +42,12 @@ export class CustomerService {
     } catch (error) {
       await connection.rollback();
       throw error;
+    } finally {
+      await connection.release();
     }
+  }
+
+  public async findByUserId(userId: number): Promise<CustomerModel | null> {
+    return CustomerModel.findByUserId(userId, { user: true });
   }
 }
